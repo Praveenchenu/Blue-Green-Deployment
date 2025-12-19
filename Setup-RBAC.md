@@ -1,6 +1,6 @@
 ## Create Service Account, Role & Assign that role, And create a secret for Service Account and geenrate a Token
 
-### Creating Service Account
+#### Creating Service Account
 
 
 ```yaml
@@ -11,7 +11,7 @@ metadata:
   namespace: webapps
 ```
 
-### Create Role 
+#### Create Role 
 
 
 ```yaml
@@ -103,3 +103,29 @@ roleRef:
 ### Generate token using service account in the namespace
 
 [Create Token](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#:~:text=To%20create%20a%20non%2Dexpiring,with%20that%20generated%20token%20data.)
+
+
+## Execution commands
+sudo snap install kubectl
+# connect to the cluster
+aws eks --region ap-south-1 update-kubeconfig --name <any name given>-cluster
+kubectl get nodes
+## after run above script one by one.
+## before create namespace in that cluster
+kubectl create ns webapps
+kubectl apply -f servcice_account.yml
+kubectl apply -f roles.yml
+kubectl apply -f bind.yml
+## create token 
+# token sec.yml
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/service-account-token
+metadata:
+  name: mysecretname
+  annotations:
+    kubernetes.io/service-account.name: jenkins
+
+kubectl apply -f sec.yml -n webapps
+kubectl describe secret <secret-name> -n webapps ## see the secret of the token.. copy that token and paster jenkins credentials..
+
